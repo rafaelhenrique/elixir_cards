@@ -1,6 +1,6 @@
 # ElixirCards
 
-**TODO: Add description**
+Study project based on https://github.com/StephenGrider/ElixirCode
 
 ## Installation
 
