@@ -1,10 +1,10 @@
 defmodule ElixirCards do
   @moduledoc """
-  Documentation for `ElixirCards`.
+    Provides methods for creating and handling a deck of cards
   """
 
   @doc """
-  Create Deck
+    Returns a list of strings representing a deck of playing cards.
 
   ## Examples
 
@@ -37,16 +37,14 @@ defmodule ElixirCards do
   end
 
   @doc """
-  Shuffle Deck
+    Randomize your deck returning a randomized list of strings
+    representing your deck.
 
   ## Examples
 
-      iex> ElixirCards.shuffle(["Ace", "Two", "Three"])
-      ["Three", "Ace", "Two"]
-      iex> ElixirCards.shuffle(["Ace", "Two", "Three"])
-      ["Three", "Two", "Ace"]
-      iex> ElixirCards.shuffle([])
-      []
+      iex> deck = ElixirCards.create_deck
+      iex> deck != ElixirCards.shuffle(deck)
+      true
 
   """
   def shuffle(deck) do
@@ -54,14 +52,13 @@ defmodule ElixirCards do
   end
 
   @doc """
-  Contains some card in a Deck
+    Determines whether a deck contains a given card.
 
   ## Examples
 
-      iex> ElixirCards.contains?(["Ace", "Two", "Three"], "Two")
+      iex> deck = ElixirCards.create_deck
+      iex> ElixirCards.contains?(deck, "Ace of Spades")
       true
-      iex> ElixirCards.contains?(["Ace", "Two", "Three"], "Four")
-      false
 
   """
   def contains?(deck, card) do
@@ -69,12 +66,16 @@ defmodule ElixirCards do
   end
 
   @doc """
-  Deal cards based on a deck
+    Divides a deck into a hand and the remainder of the deck.
+    The `hand_size` argument indicates how many cards should
+    be in the hand.
 
   ## Examples
 
-      iex> ElixirCards.deal(["Ace", "Two", "Three"], 1)
-      {["Ace"], ["Two", "Three"]}
+      iex> deck = ElixirCards.create_deck
+      iex> {hand, deck} = ElixirCards.deal(deck, 1)
+      iex> hand
+      ["Ace of Spades"]
 
   """
   def deal(deck, hand_size) do
@@ -82,18 +83,23 @@ defmodule ElixirCards do
   end
 
   @doc """
-  Save deck to file
+    Save a deck to binary file in your disk. The `filename`
+    argument indicates name of file to store your deck.
 
   ## Examples
 
-      iex> ElixirCards.save(["Ace", "Two", "Three"], "my_deck")
+      iex> deck = ElixirCards.create_deck
+      iex> ElixirCards.save(deck, "/tmp/sample_doctest")
       :ok
 
   """
   def save(deck, filename) do
     # this solution store deck in binary format
     binary = :erlang.term_to_binary(deck)
-    File.write(filename, binary)
+    case File.write(filename, binary) do
+      :ok -> :ok
+      {:error, _reason} -> "Cannot write deck to this filename #{filename}"
+    end
 
     # another solution to write in ascii
     #
@@ -102,6 +108,20 @@ defmodule ElixirCards do
     # File.close(file)
   end
 
+  @doc """
+    Load a deck from binary file in your disk. The `filename`
+    argument indicates name of file to read your deck from your
+    disk.
+
+  ## Examples
+
+      iex> deck = ElixirCards.create_deck
+      iex> ElixirCards.save(deck, "/tmp/sample_doctest")
+      iex> loaded_deck = ElixirCards.load("/tmp/sample_doctest")
+      iex> loaded_deck == deck
+      true
+
+  """
   def load(filename) do
     case File.read(filename) do
       {:ok, binary} -> :erlang.binary_to_term binary
@@ -109,6 +129,15 @@ defmodule ElixirCards do
     end
   end
 
+  @doc """
+    Create a deck using `create_deck` method, shuffle deck
+    using `shuffle` method and divides a deck into a hand
+    and the remainder of the deck using `deal` method.
+
+    The `hand_size` argument indicates how many cards should
+    be in the hand.
+
+  """
   def create_hand(hand_size) do
     # this is a wrong/dumb solution
     #
